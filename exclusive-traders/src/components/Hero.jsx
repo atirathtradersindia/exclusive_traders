@@ -1,7 +1,8 @@
+// src/components/Hero.jsx
 import { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 
-const Hero = () => {
+const Hero = ({ navigateToSection, showInnovation }) => {
   const canvasRef = useRef();
   const labelRef = useRef();
   const [isGlobeReady, setIsGlobeReady] = useState(false);
@@ -29,14 +30,14 @@ const Hero = () => {
     
     updateRendererSize();
     
-    // Create globe with neon green color
+    // Create globe with blue color
     const geometry = new THREE.SphereGeometry(2.5, 64, 64);
-const material = new THREE.MeshStandardMaterial({ 
-  color: 0x0000FFFF, // Blue color (dodger blue)
-  wireframe: true, 
-  transparent: true, 
-  opacity: 0.5 
-});
+    const material = new THREE.MeshStandardMaterial({ 
+      color: 0x0000FFFF,
+      wireframe: true, 
+      transparent: true, 
+      opacity: 0.5 
+    });
     
     const globe = new THREE.Mesh(geometry, material);
     scene.add(globe);
@@ -44,7 +45,7 @@ const material = new THREE.MeshStandardMaterial({
     // Create particles with neon green color
     const particleGeo = new THREE.BufferGeometry();
     const particleMat = new THREE.PointsMaterial({ 
-      color: 0x39ff14, // Neon green color
+      color: 0x39ff14,
       size: 0.02 
     });
     
@@ -96,7 +97,7 @@ const material = new THREE.MeshStandardMaterial({
       
       const markerGeo = new THREE.SphereGeometry(0.05, 8, 8);
       const markerMat = new THREE.MeshBasicMaterial({ 
-        color: 0x39ff14, // Neon green color for markers
+        color: 0x39ff14,
       });
       
       const marker = new THREE.Mesh(markerGeo, markerMat);
@@ -171,6 +172,11 @@ const material = new THREE.MeshStandardMaterial({
     };
   }, []);
 
+  const handleDiscoverInnovations = (e) => {
+    e.preventDefault();
+    showInnovation();
+  };
+
   return (
     <section className="hero relative overflow-hidden text-white py-24 text-center h-screen flex items-center justify-center">
       <video 
@@ -193,13 +199,17 @@ const material = new THREE.MeshStandardMaterial({
       <div ref={labelRef} className="label absolute text-secondary text-base font-bold pointer-events-none hidden z-30 text-shadow-neon"></div>
       
       <div className="container relative z-30 hero-content">
-        <h1 className="text-5xl font-bold mb-4 text-shadow-neon">
+        <h1 className="text-5xl font-bold mb-4 text-shadow-neon font-inter">
           Revolutionizing Global Supply Chains with Futuristic Solutions
         </h1>
-        <p className="text-xl max-w-3xl mx-auto mb-8">
+        <p className="text-xl max-w-3xl mx-auto mb-8 font-inter">
           Exclusive Traders delivers cutting-edge import/export and warehousing services, powered by AI and blockchain for unparalleled efficiency and transparency across the UK and globally.
         </p>
-        <a href="#services" className="btn">
+        <a 
+          href="#innovation" 
+          onClick={handleDiscoverInnovations}
+          className="btn font-inter font-semibold"
+        >
           Discover Our Innovations
         </a>
       </div>

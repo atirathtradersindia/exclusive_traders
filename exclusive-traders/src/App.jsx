@@ -7,6 +7,7 @@ import Hero from './components/Hero';
 import Services from './components/Services';
 import About from './components/About';
 import Industries from './components/Industries';
+import Innovation from './components/Innovation';
 import QuoteRequest from './components/QuoteRequest';
 import Footer from './components/Footer';
 import SignIn from './components/SignIn';
@@ -26,6 +27,7 @@ function App() {
   const [showSignOutSuccess, setShowSignOutSuccess] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showInnovationPage, setShowInnovationPage] = useState(false);
 
   useAnimation();
 
@@ -72,6 +74,9 @@ function App() {
     const handlePopState = () => {
       const hash = window.location.hash.replace('#', '') || 'home';
       setCurrentPage(hash);
+      if (hash !== 'innovation') {
+        setShowInnovationPage(false);
+      }
     };
     window.addEventListener('popstate', handlePopState);
     const hash = window.location.hash.replace('#', '') || 'home';
@@ -99,6 +104,9 @@ function App() {
   // -----------------------------------------------------------------
   const navigateToPage = (page) => {
     setCurrentPage(page);
+    if (page !== 'innovation') {
+      setShowInnovationPage(false);
+    }
     window.history.pushState({}, '', `#${page}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setIsMobileMenuOpen(false);
@@ -107,11 +115,26 @@ function App() {
 
   const navigateToSection = (sectionId) => {
     setCurrentPage('home');
+    setShowInnovationPage(false);
     window.history.pushState({}, '', '#home');
     setTimeout(() => {
       const el = document.getElementById(sectionId);
-      el?.scrollIntoView({ behavior: 'smooth' });
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        // If section doesn't exist, scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }, 100);
+    setIsMobileMenuOpen(false);
+    setIsSidebarOpen(false);
+  };
+
+  const showInnovation = () => {
+    setCurrentPage('innovation');
+    setShowInnovationPage(true);
+    window.history.pushState({}, '', '#innovation');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setIsMobileMenuOpen(false);
     setIsSidebarOpen(false);
   };
@@ -119,6 +142,7 @@ function App() {
   const showIndustryProducts = (industry) => {
     setCurrentIndustry(industry);
     setCurrentPage('products');
+    setShowInnovationPage(false);
     setSearchTerm('');
     window.history.pushState({}, '', '#products');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -127,6 +151,7 @@ function App() {
 
   const showAllProducts = () => {
     setCurrentPage('all-products');
+    setShowInnovationPage(false);
     setSearchTerm('');
     window.history.pushState({}, '', '#all-products');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -135,6 +160,7 @@ function App() {
 
   const goBackToAllProducts = () => {
     setCurrentPage('all-products');
+    setShowInnovationPage(false);
     setSearchTerm('');
     window.history.pushState({}, '', '#all-products');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -143,6 +169,7 @@ function App() {
 
   const goBackToIndustries = () => {
     setCurrentPage('home');
+    setShowInnovationPage(false);
     setSearchTerm('');
     window.history.pushState({}, '', '#home');
     setTimeout(() => navigateToSection('industries'), 100);
@@ -199,13 +226,13 @@ function App() {
   if (!isMounted) {
     return (
       <div className="min-h-screen bg-dark flex items-center justify-center">
-        <div className="text-secondary text-2xl">Loading...</div>
+        <div className="text-secondary text-2xl font-inter">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="App">
+    <div className="App font-inter">
       {/* Header */}
       <Header
         navigateToPage={navigateToPage}
@@ -221,9 +248,9 @@ function App() {
 
       {/* Main content */}
       <main>
-        {currentPage === 'home' && (
+        {currentPage === 'home' && !showInnovationPage && (
           <>
-            <Hero />
+            <Hero navigateToSection={navigateToSection} showInnovation={showInnovation} />
             <Services />
             <About />
             <Industries
@@ -233,6 +260,10 @@ function App() {
             />
             <QuoteRequest />
           </>
+        )}
+
+        {(currentPage === 'innovation' || showInnovationPage) && (
+          <Innovation onBackToHome={() => navigateToPage('home')} />
         )}
 
         {currentPage === 'products' && (
@@ -271,10 +302,10 @@ function App() {
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
           <div className="bg-dark border border-secondary rounded-lg p-6 max-w-md w-full mx-auto">
             <div className="text-center">
-              <h3 className="text-2xl text-secondary mb-4 text-shadow-neon">
+              <h3 className="text-2xl text-secondary mb-4 text-shadow-neon font-inter">
                 Authentication Required
               </h3>
-              <p className="text-light mb-6">
+              <p className="text-light mb-6 font-inter">
                 Please sign in or create an account to{' '}
                 {authAction === 'addToCart' ? 'add items to your cart' : 'place an order'}.
               </p>
@@ -284,7 +315,7 @@ function App() {
                     closeAuthModal();
                     navigateToPage('signin');
                   }}
-                  className="btn bg-secondary text-dark hover:bg-accent hover:text-dark py-3 text-lg"
+                  className="btn bg-secondary text-dark hover:bg-accent hover:text-dark py-3 text-lg font-inter font-semibold"
                 >
                   Sign In
                 </button>
@@ -293,13 +324,13 @@ function App() {
                     closeAuthModal();
                     navigateToPage('signup');
                   }}
-                  className="btn bg-accent text-dark hover:bg-secondary hover:text-dark py-3 text-lg"
+                  className="btn bg-accent text-dark hover:bg-secondary hover:text-dark py-3 text-lg font-inter font-semibold"
                 >
                   Create Account
                 </button>
                 <button
                   onClick={closeAuthModal}
-                  className="btn bg-gray-500 text-light hover:bg-gray-600 py-3 text-lg"
+                  className="btn bg-gray-500 text-light hover:bg-gray-600 py-3 text-lg font-inter font-semibold"
                 >
                   Cancel
                 </button>
@@ -318,8 +349,8 @@ function App() {
                 <i className="fas fa-check text-dark text-sm"></i>
               </div>
               <div className="flex-1">
-                <p className="font-semibold text-light">Signed Out Successfully!</p>
-                <p className="text-gray-100 text-sm opacity-90">
+                <p className="font-semibold text-light font-inter">Signed Out Successfully!</p>
+                <p className="text-gray-100 text-sm opacity-90 font-inter">
                   You have been logged out of your account.
                 </p>
               </div>
